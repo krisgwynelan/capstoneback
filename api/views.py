@@ -46,7 +46,13 @@ class LocationViewSet(ModelViewSet):
         # ✅ Automatically assign the logged-in user when creating
         serializer.save(user=self.request.user)
 
+class CurrentUserView(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def get(self, request):
+        user = request.user
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
 
 class SensorDataView(APIView):
     def get(self, request):
