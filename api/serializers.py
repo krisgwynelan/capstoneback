@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import User, Location
+from .models import User, Location, Farmland, Area
+
 from django.contrib.auth import authenticate
 
 class UserSerializer(serializers.ModelSerializer):
@@ -33,3 +34,16 @@ class LocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
         fields = ['id', 'name', 'user']
+        
+        
+class AreaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Area
+        fields = ['id', 'name', 'devices']
+
+class FarmlandSerializer(serializers.ModelSerializer):
+    areas = AreaSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Farmland
+        fields = ['id', 'name', 'areas']

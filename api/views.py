@@ -5,10 +5,11 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.authentication import JWTAuthentication  # <- For JWT Auth
-from .serializers import RegisterSerializer, LoginSerializer, UserSerializer, LocationSerializer
-from .models import Location
+from .serializers import RegisterSerializer, LoginSerializer, UserSerializer, LocationSerializer,  FarmlandSerializer, AreaSerializer
+from .models import Location, Farmland, Area
 from rest_framework.views import APIView
-from rest_framework.response import Response
+from rest_framework import status
+
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
@@ -59,3 +60,24 @@ class SensorDataView(APIView):
             'temperature': 80
         }
         return Response(data)
+    
+class FarmlandViewSet(viewsets.ModelViewSet):
+    queryset = Farmland.objects.all()
+    serializer_class = FarmlandSerializer
+
+class AreaViewSet(viewsets.ModelViewSet):
+    queryset = Area.objects.all()
+    serializer_class = AreaSerializer
+
+    def get_queryset(self):
+        farmland_id = self.request.query_params.get('farmland_id')
+        if farmland_id:
+            return self.queryset.filter(farmland_id=farmland_id)
+        return self.queryset.none()
+
+    def create(self, request, *args, **kwargs):
+        # To create an Area, farmland_id must be in the data
+        farmland_id = request.data.get('farmland')
+        if not farmland_id:
+            return Response({'error': 'farmland field is required'}, status=status.HTTP_400_BAD_REQUEST)
+        return super().create(request, *args, **kwargs)

@@ -56,3 +56,17 @@ class Location(models.Model):
     def __str__(self):
         return self.name
 
+
+class Farmland(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+class Area(models.Model):
+    farmland = models.ForeignKey(Farmland, related_name='areas', on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    devices = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.name} ({self.farmland.name})"
