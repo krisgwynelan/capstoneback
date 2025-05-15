@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
-from .models import User, Location
+from .models import User, Location, Farmland, Area
 
 
 class CustomUserAdmin(BaseUserAdmin):
@@ -42,3 +42,11 @@ admin.site.register(User, CustomUserAdmin)
 
 # Optional: unregister the default Group model if not needed
 admin.site.unregister(Group)
+
+@admin.register(Area)
+class AreaAdmin(admin.ModelAdmin):
+    list_display = ('name', 'farmland', 'devices')
+
+@admin.register(Farmland)
+class FarmlandAdmin(admin.ModelAdmin):
+    list_display = ('name',)
